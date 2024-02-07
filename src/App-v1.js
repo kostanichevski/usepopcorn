@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const tempMovieData = [
   {
@@ -210,17 +210,9 @@ function WatchedMovie({ movie }) {
   );
 }
 
-const KEY = "85d72344";
-
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   const [watched, setWatched] = useState(tempWatchedData);
-
-  useEffect(function () {
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-      .then((res) => res.json())
-      .then((data) => console.log(data));
-  }, []); //with the empty array braces we specify that this function will only run on moun (the first time the function "APP" is rendered)
 
   return (
     <>
