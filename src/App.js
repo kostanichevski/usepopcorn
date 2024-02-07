@@ -213,15 +213,25 @@ function WatchedMovie({ movie }) {
 const KEY = "85d72344";
 
 export default function App() {
-  const [movies, setMovies] = useState(tempMovieData);
-  const [watched, setWatched] = useState(tempWatchedData);
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const query = "interstellar";
 
+  //this is the bare bones way to fetch data in react, in a simple app
+  //in larger scale applications we may use libraries for data fetching
   useEffect(function () {
-    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    async function fetchMovies() {
+      setIsLoading(true);
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+      setIsLoading(false);
+    }
+    fetchMovies();
   }, []); //with the empty array braces we specify that this function will only run on moun (the first time the function "APP" is rendered)
-
   return (
     <>
       <NavBar>
@@ -230,9 +240,7 @@ export default function App() {
         <NumResults movies={movies} />
       </NavBar>
       <Main>
-        <Box>
-          <MovieList movies={movies} />
-        </Box>
+        <Box>{isLoading ? <Loader /> : <MovieList movies={movies} />}</Box>
         {/* <WatchedBox /> */}
         <Box>
           <WatchedSummary watched={watched} />
@@ -242,3 +250,16 @@ export default function App() {
     </>
   );
 }
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
+//A side effect is basically any interaction between a React component and the world outside the component. We can also think of a side effect as code that actually does something. Examples: Data fetching, setting up subscriptions, setting up timers, manually accessing the DOM, etc.
+
+// we can create side effects in two different ways: using an event handler and effects
+// event handlers execute when an event happens (onClick, onSubmit)
+// effects create right when the component renders and after subsequent re-renders if we specify so
+// effects are used to keep a component synchronized with some external system(API for ex.)
+
+//event handlers are the preffered way to create side effects
