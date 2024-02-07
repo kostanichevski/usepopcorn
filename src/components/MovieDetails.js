@@ -23,10 +23,21 @@ import { Loader } from "./Loader";
 //     </div>
 //   );
 // }
-export function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
+export function MovieDetails({
+  selectedId,
+  onCloseMovie,
+  onAddWatched,
+  watched,
+}) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
+
+  const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
+
   const {
     Title: title,
     Year: year,
@@ -50,6 +61,7 @@ export function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
     };
+
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
@@ -95,15 +107,21 @@ export function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
           </header>
           <section>
             <div className="rating">
-              <StarRating
-                size={24}
-                maxRating={10}
-                onSetRating={setUserRating}
-              />
-              {userRating > 0 && (
-                <button className="btn-add" onClick={handleAdd}>
-                  + Add to list
-                </button>
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    size={24}
+                    maxRating={10}
+                    onSetRating={setUserRating}
+                  />
+                  {userRating > 0 && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      + Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>You rated this movie with {watchedUserRating} ⭐️</p>
               )}
             </div>
             <p>
